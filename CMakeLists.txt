@@ -60,6 +60,7 @@ target_compile_definitions(cimgui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1)
 if (WIN32)
     target_compile_definitions(cimgui PUBLIC 
         "IMGUI_IMPL_API=extern \"C\" __declspec\(dllexport\)"
+        "IMGUI_IMPL_WIN32_WNDPROC_HANDLER_UNDEF=\#undef IMGUI_IMPL_API\n#define IMGUI_IMPL_API __declspec\(dllexport\)"
     )
     list(APPEND IMGUI_LIBRARIES imm32 d3d11 d3dcompiler)
 else (WIN32)
