@@ -49,6 +49,12 @@ jobs:
         cd ./generator
         bash ./generator.sh
 
+    - name: Upload Generator Output
+      uses: actions/upload-artifact@v3
+      with:
+        name: generator-output
+        path: generator/output/
+
     - name: CMake
       run: |
         mkdir cmake-build
