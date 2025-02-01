@@ -49,17 +49,17 @@ jobs:
       env:
         GITHUB_OS: ${{ matrix.os }}
       run: |
+        # First verify the file exists
+        if [ ! -f "imgui/backends/imgui_impl_win32.h" ]; then
+          echo "Error: imgui_impl_win32.h not found at expected path"
+          ls -R imgui/
+          exit 1
+        fi
+        
         if [ "$GITHUB_OS" == "windows-latest" ]; then
-          # First verify the file exists and show content before modification
-          powershell -Command "Get-Content imgui/backends/imgui_impl_win32.h | Select -First 20"
-          
-          # Change #if 0 to #if 1
-          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h -Raw) | 
-            ForEach-Object { $_ -replace '#if 0', '#if 1' } |
-            Set-Content imgui/backends/imgui_impl_win32.h;
-            Get-Content imgui/backends/imgui_impl_win32.h | Select -First 20"
+          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h) -replace '#if 0[\s\S]*?extern', 'extern' -replace '#endif', '' | Set-Content imgui/backends/imgui_impl_win32.h"
         else
-          sed -i 's/#if 0/#if 1/g' imgui/backends/imgui_impl_win32.h
+          sed -i -e '/#if 0/d' -e '/#endif/d' imgui/backends/imgui_impl_win32.h
         fi
 
     - name: Generate Bindings
@@ -76,3 +76,27 @@ jobs:
           generator/output/
           cimgui.cpp
           cimgui.h
+
+    - name: CMake
+      run: |
+        mkdir cmake-build
+        cd cmake-build
+        cmake -DCIMGUI_TEST=1 ..
+
+    - name: Build
+      working-directory: cmake-build
+      run: |
+        cmake --build .
+
+    - name: Test
+      shell: bash
+      env:
+        GITHUB_OS: ${{ matrix.os }}
+      working-directory: cmake-build
+      run: |
+        if [ "$GITHUB_OS" == "windows-latest" ];
+        then
+          ./Debug/cimgui_test.exe
+        else
+          ./cimgui_test
+        fi

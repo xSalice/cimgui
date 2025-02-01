@@ -18,10 +18,15 @@ file(GLOB IMGUI_SOURCES
     imgui/imgui_draw.cpp
     imgui/imgui_demo.cpp
     imgui/imgui_widgets.cpp
-    imgui/backends/imgui_impl_dx11.cpp
-    imgui/backends/imgui_impl_win32.cpp
-	${TABLES_SOURCE}
+    ${TABLES_SOURCE}
 )
+
+if (WIN32)
+    list(APPEND IMGUI_SOURCES
+        imgui/backends/imgui_impl_dx11.cpp
+        imgui/backends/imgui_impl_win32.cpp
+    )
+endif()
 
 set(IMGUI_STATIC "no" CACHE STRING "Build as a static library")
 set(IMGUI_FREETYPE "no" CACHE STRING "Build with freetype library")
