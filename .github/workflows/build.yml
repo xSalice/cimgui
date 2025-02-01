@@ -57,7 +57,7 @@ jobs:
         fi
         
         if [ "$GITHUB_OS" == "windows-latest" ]; then
-          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h) | Where-Object { `$_ -notmatch '^#if 0`$|^#endif`$' } | Set-Content imgui/backends/imgui_impl_win32.h"
+          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h) | Where-Object { \$_ -notmatch '^#if 0\$|^#endif\$' } | Set-Content imgui/backends/imgui_impl_win32.h"
         else
           sed -i -e '/#if 0/d' -e '/#endif/d' imgui/backends/imgui_impl_win32.h
         fi
