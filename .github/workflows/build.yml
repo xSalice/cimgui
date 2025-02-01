@@ -20,7 +20,8 @@ jobs:
       run: |
         if [ "$GITHUB_OS" == "macOS-latest" ];
         then
-          brew install luajit
+          brew install luajit gnu-sed
+          echo "$(brew --prefix)/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
         elif [ "$GITHUB_OS" == "ubuntu-latest" ];
         then
           sudo apt-get install -y luajit
