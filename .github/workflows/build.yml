@@ -49,19 +49,17 @@ jobs:
       env:
         GITHUB_OS: ${{ matrix.os }}
       run: |
-        # First verify the file exists and show content before modification
         if [ "$GITHUB_OS" == "windows-latest" ]; then
+          # First verify the file exists and show content before modification
           powershell -Command "Get-Content imgui/backends/imgui_impl_win32.h | Select -First 20"
           
-          # Remove the #if 0 block more explicitly
-          powershell -Command "$content = Get-Content imgui/backends/imgui_impl_win32.h -Raw; 
-            $pattern = [regex]::Escape('#if 0') + '.*?' + [regex]::Escape('extern') | Set-Content imgui/backends/imgui_impl_win32.h;
-            $content = $content -replace $pattern, 'extern';
-            $content = $content -replace '#endif', '';
-            Set-Content imgui/backends/imgui_impl_win32.h -Value $content;
+          # Change #if 0 to #if 1
+          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h -Raw) | 
+            ForEach-Object { $_ -replace '#if 0', '#if 1' } |
+            Set-Content imgui/backends/imgui_impl_win32.h;
             Get-Content imgui/backends/imgui_impl_win32.h | Select -First 20"
         else
-          sed -i -e '/#if 0/d' -e '/#endif/d' imgui/backends/imgui_impl_win32.h
+          sed -i 's/#if 0/#if 1/g' imgui/backends/imgui_impl_win32.h
         fi
 
     - name: Generate Bindings
