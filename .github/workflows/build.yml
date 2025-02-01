@@ -43,6 +43,17 @@ jobs:
         git clone https://github.com/ocornut/imgui.git
       if: github.event_name == 'schedule'
 
+    - name: Patch ImGui Win32 Backend
+      shell: bash
+      env:
+        GITHUB_OS: ${{ matrix.os }}
+      run: |
+        if [ "$GITHUB_OS" == "windows-latest" ]; then
+          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h) -replace '#if 0[\s\S]*?extern', 'extern' -replace '#endif', '' | Set-Content imgui/backends/imgui_impl_win32.h"
+        else
+          sed -i -e '/#if 0/d' -e '/#endif/d' imgui/backends/imgui_impl_win32.h
+        fi
+
     - name: Generate Bindings
       shell: bash
       run: |
