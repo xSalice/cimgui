@@ -53,10 +53,12 @@ endif(IMGUI_WCHAR32)
 add_definitions("-DIMGUI_USER_CONFIG=\"../cimconfig.h\"")
 target_compile_definitions(cimgui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1)
 if (WIN32)
-    target_compile_definitions(cimgui PUBLIC IMGUI_IMPL_API=extern\t\"C\"\t__declspec\(dllexport\))
+    target_compile_definitions(cimgui PUBLIC 
+        "IMGUI_IMPL_API=__declspec\(dllexport\)"
+    )
     list(APPEND IMGUI_LIBRARIES imm32 d3d11 d3dcompiler)
 else (WIN32)
-    target_compile_definitions(cimgui PUBLIC IMGUI_IMPL_API=extern\t\"C\"\t)
+    target_compile_definitions(cimgui PUBLIC "IMGUI_IMPL_API=")
 endif (WIN32)
 
 target_include_directories(cimgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
