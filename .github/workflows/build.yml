@@ -48,6 +48,13 @@ jobs:
       env:
         GITHUB_OS: ${{ matrix.os }}
       run: |
+        # First verify the file exists
+        if [ ! -f "imgui/backends/imgui_impl_win32.h" ]; then
+          echo "Error: imgui_impl_win32.h not found at expected path"
+          ls -R imgui/
+          exit 1
+        fi
+        
         if [ "$GITHUB_OS" == "windows-latest" ]; then
           powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h) -replace '#if 0[\s\S]*?extern', 'extern' -replace '#endif', '' | Set-Content imgui/backends/imgui_impl_win32.h"
         else
