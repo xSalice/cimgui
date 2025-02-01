@@ -49,15 +49,17 @@ jobs:
       env:
         GITHUB_OS: ${{ matrix.os }}
       run: |
-        # First verify the file exists
-        if [ ! -f "imgui/backends/imgui_impl_win32.h" ]; then
-          echo "Error: imgui_impl_win32.h not found at expected path"
-          ls -R imgui/
-          exit 1
-        fi
-        
+        # First verify the file exists and show content before modification
         if [ "$GITHUB_OS" == "windows-latest" ]; then
-          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h -Raw) -replace '(?s)#if 0.*?extern', 'extern' -replace '#endif', '' | Set-Content imgui/backends/imgui_impl_win32.h"
+          powershell -Command "Get-Content imgui/backends/imgui_impl_win32.h | Select -First 20"
+          
+          # Remove the #if 0 block more explicitly
+          powershell -Command "$content = Get-Content imgui/backends/imgui_impl_win32.h -Raw; 
+            $pattern = [regex]::Escape('#if 0') + '.*?' + [regex]::Escape('extern') | Set-Content imgui/backends/imgui_impl_win32.h;
+            $content = $content -replace $pattern, 'extern';
+            $content = $content -replace '#endif', '';
+            Set-Content imgui/backends/imgui_impl_win32.h -Value $content;
+            Get-Content imgui/backends/imgui_impl_win32.h | Select -First 20"
         else
           sed -i -e '/#if 0/d' -e '/#endif/d' imgui/backends/imgui_impl_win32.h
         fi
