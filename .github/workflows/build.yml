@@ -52,7 +52,7 @@ jobs:
     - name: Upload Generator Output
       uses: actions/upload-artifact@v4
       with:
-        name: generator-output
+        name: generator-output-${{ matrix.os }}
         path: generator/output/
 
     - name: CMake
