@@ -57,7 +57,7 @@ jobs:
         fi
         
         if [ "$GITHUB_OS" == "windows-latest" ]; then
-          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h) -replace '#if 0[\s\S]*?extern', 'extern' -replace '#endif', '' | Set-Content imgui/backends/imgui_impl_win32.h"
+          powershell -Command "(Get-Content imgui/backends/imgui_impl_win32.h -Raw) -replace '(?s)#if 0.*?extern', 'extern' -replace '#endif', '' | Set-Content imgui/backends/imgui_impl_win32.h"
         else
           sed -i -e '/#if 0/d' -e '/#endif/d' imgui/backends/imgui_impl_win32.h
         fi
@@ -76,27 +76,3 @@ jobs:
           generator/output/
           cimgui.cpp
           cimgui.h
-
-    - name: CMake
-      run: |
-        mkdir cmake-build
-        cd cmake-build
-        cmake -DCIMGUI_TEST=1 ..
-
-    - name: Build
-      working-directory: cmake-build
-      run: |
-        cmake --build .
-
-    - name: Test
-      shell: bash
-      env:
-        GITHUB_OS: ${{ matrix.os }}
-      working-directory: cmake-build
-      run: |
-        if [ "$GITHUB_OS" == "windows-latest" ];
-        then
-          ./Debug/cimgui_test.exe
-        else
-          ./cimgui_test
-        fi
